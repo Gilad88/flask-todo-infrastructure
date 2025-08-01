@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-todo-db-deployment
+  labels:
+    app: flask-todo-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-todo-db
+  template:
+    metadata:
+      labels:
+        app: flask-todo-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:13
+        env:
+        - name: POSTGRES_USER
+          value: user
+        - name: POSTGRES_PASSWORD
+          value: password
+        - name: POSTGRES_DB
+          value: todoapp
+        ports:
+        - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-todo-db-service
+  labels:
+    app: flask-todo-db
+spec:
+  selector:
+    app: flask-todo-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP
